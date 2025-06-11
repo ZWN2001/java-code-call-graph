@@ -44,8 +44,9 @@ public class CallGraphApplication {
             }
 
             // 生成输出文件名（使用时间戳）
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            String outputFileName = "callgraph_" + timestamp + ".json";
+//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+//            String outputFileName = "callgraph_" + timestamp + ".json";
+            String outputFileName = "callgraph.json";
             String outputPath = Paths.get(projectPath, outputFileName).toString();
 
             // 将分析结果写入文件

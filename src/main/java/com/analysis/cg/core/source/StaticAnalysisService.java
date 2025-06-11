@@ -25,18 +25,36 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+// import java.io.FileWriter;
+// import java.nio.file.Paths;
+// import java.time.LocalDateTime;
+// import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 //class test{
-//    public static void main(String[] args) {
-//        String path  = "./tmp/repo/53d37f060d32f95d5ff960dc68cd9842";
-//        StaticAnalysisService staticAnalysisService = new StaticAnalysisService();
-//        AstEntity astEntity = staticAnalysisService.methodCallGraph(path);
-//        String callGraphText = staticAnalysisService.generateCallGraphJson(astEntity);
-//        System.out.println(callGraphText);
-//    }
+//   public static void main(String[] args) {
+//       String path  = "./tmp/repo/53d37f060d32f95d5ff960dc68cd9842";
+//       StaticAnalysisService staticAnalysisService = new StaticAnalysisService();
+//       AstEntity astEntity = staticAnalysisService.methodCallGraph(path);
+//       String callGraphText = staticAnalysisService.generateCallGraphJson(astEntity);
+//       System.out.println(callGraphText);
+//
+//       // 生成输出文件名（使用时间戳）
+//       String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+//       String outputFileName = "callgraph_" + timestamp + ".json";
+//       String outputPath = Paths.get(path, outputFileName).toString();
+//
+//       // 将分析结果写入文件
+//       try (FileWriter writer = new FileWriter(outputPath)) {
+//           writer.write(staticAnalysisService.generateCallGraphJson(astEntity));
+//           System.out.println("分析完成！结果已保存到: " + outputPath);
+//       } catch (Exception e) {
+//           System.err.println("错误: 无法写入输出文件: " + e.getMessage());
+//           System.exit(1);
+//       }
+//   }
 //}
 
 @Service
