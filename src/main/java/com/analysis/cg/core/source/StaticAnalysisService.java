@@ -25,37 +25,37 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-// import java.io.FileWriter;
-// import java.nio.file.Paths;
-// import java.time.LocalDateTime;
-// import java.time.format.DateTimeFormatter;
+import java.io.FileWriter;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-//class test{
-//   public static void main(String[] args) {
-//       String path  = "./tmp/repo/53d37f060d32f95d5ff960dc68cd9842";
-//       StaticAnalysisService staticAnalysisService = new StaticAnalysisService();
-//       AstEntity astEntity = staticAnalysisService.methodCallGraph(path);
-//       String callGraphText = staticAnalysisService.generateCallGraphJson(astEntity);
-//       System.out.println(callGraphText);
-//
-//       // 生成输出文件名（使用时间戳）
-//       String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-//       String outputFileName = "callgraph_" + timestamp + ".json";
-//       String outputPath = Paths.get(path, outputFileName).toString();
-//
-//       // 将分析结果写入文件
-//       try (FileWriter writer = new FileWriter(outputPath)) {
-//           writer.write(staticAnalysisService.generateCallGraphJson(astEntity));
-//           System.out.println("分析完成！结果已保存到: " + outputPath);
-//       } catch (Exception e) {
-//           System.err.println("错误: 无法写入输出文件: " + e.getMessage());
-//           System.exit(1);
-//       }
-//   }
-//}
+class test{
+  public static void main(String[] args) {
+      String path  = "./tmp/repo/53d37f060d32f95d5ff960dc68cd9842";
+      StaticAnalysisService staticAnalysisService = new StaticAnalysisService();
+      AstEntity astEntity = staticAnalysisService.methodCallGraph(path);
+      String callGraphText = staticAnalysisService.generateCallGraphJson(astEntity);
+      System.out.println(callGraphText);
+
+    //   // 生成输出文件名（使用时间戳）
+    //   String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+    //   String outputFileName = "callgraph_" + timestamp + ".json";
+    //   String outputPath = Paths.get(path, outputFileName).toString();
+
+    //   // 将分析结果写入文件
+    //   try (FileWriter writer = new FileWriter(outputPath)) {
+    //       writer.write(staticAnalysisService.generateCallGraphJson(astEntity));
+    //       System.out.println("分析完成！结果已保存到: " + outputPath);
+    //   } catch (Exception e) {
+    //       System.err.println("错误: 无法写入输出文件: " + e.getMessage());
+    //       System.exit(1);
+    //   }
+  }
+}
 
 @Service
 public class StaticAnalysisService {
@@ -171,8 +171,15 @@ public class StaticAnalysisService {
                                 ResolvedMethodDeclaration resolve = methodCallExpr.resolve();
                                 return resolve.getQualifiedSignature();
                             } catch (Throwable throwable) {
-            
-                                return null;
+                                // 如果无法解析方法调用，尝试获取调用表达式的基本信息
+                                try {
+                                    String scope = methodCallExpr.getScope()
+                                            .map(scopeExpr -> scopeExpr.calculateResolvedType().describe())
+                                            .orElse("unknown");
+                                    return scope + "." + methodCallExpr.getNameAsString() + "()";
+                                } catch (Exception e) {
+                                    return null;
+                                }
                             }
                         }).filter(e -> e != null && !e.isEmpty())
                         .collect(Collectors.toList());
@@ -360,10 +367,13 @@ public class StaticAnalysisService {
                         json.append("          \"name\": \"").append(calledMethod.getClassSimpleName())
                             .append(".").append(calledMethod.getSimpleName()).append("\",\n");
                         json.append("          \"line\": ").append(calledMethod.getStartLine()).append(",\n");
+                        json.append("          \"signature\": \"").append(callSig).append("\",\n");
                         json.append("          \"type\": \"internal\"\n");
                         json.append("        }");
                     } else {
                         json.append("\n");
+                        json.append("          \"name\": \"").append(callSig.substring(callSig.lastIndexOf(".") + 1)).append("\",\n");
+                        json.append("          \"line\": 0,\n");
                         json.append("          \"signature\": \"").append(callSig).append("\",\n");
                         json.append("          \"type\": \"external\"\n");
                         json.append("        }");
